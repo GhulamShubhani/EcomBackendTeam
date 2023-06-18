@@ -1,34 +1,41 @@
-// const mongoos=require("mongoose");
-import mongoos from mongoos;
-
-const sellerAddminSchema=mongoos.schema({
-    name:{
+import mongoose from 'mongoose';
+const sellerAddminSchema=mongoose.Schema({
+    fullName:{
         type:String,
         required:[true,"Please enter your name"]
     },
-    mobNumber:{
+    email:{
+        type:String,
+        required:[true,"Please enter your email"]
+    },
+    password:{
+        type:String,
+        required:[true,"Please enter your Password"],
+        minLength:[4,"please enter atleast 8 char"]
+    },
+    mobileNumber:{
         type:Number,
         required:[true,"Please enter your mobile number"],
-        maxLength:[4,"mobile number cannot exceed 10 Number"]
+        maxLength:[14,"mobile number not less than 10"]
     },
     adharNumber:{
         type:Number,
-        required:[true,"Please enter your Adhar number"],
-        maxLength:[4,"Adhar number cannot exceed 12 Number"]
+        // required:[true,"Please enter your Adhar number"],
+        // maxLength:[4,"Adhar number cannot exceed 12 Number"]
     },
     panNumber:{
         type:Number,
-        required:[true,"Please enter your Pan number"]
+        // required:[true,"Please enter your Pan number"]
     },
     accountNumber:[
         {
             accountnum:{
                 type:Number,
-                required:[true,"Please enter your Account number"]
+                // required:[true,"Please enter your Account number"]
             },
             ifcCode:{
                 type:Number,
-                required:[true,"Please enter your IFC-CODE number"]
+                // required:[true,"Please enter your IFC-CODE number"]
             },  
         }
     ],
@@ -36,26 +43,28 @@ const sellerAddminSchema=mongoos.schema({
         {
             village:{
                 type:String,
-                required:[true,"Please enter your Village"]
+                // required:[true,"Please enter your Village"]
             },
             District:{
                 type:String,
-                required:[true,"Please enter your District"]
+                // required:[true,"Please enter your District"]
             },
             state:{
                 type:String,
-                required:[true,"Please enter your State Name"]
+                // required:[true,"Please enter your State Name"]
             },
             PinCode:{
                 type:Number,
-                required:[true,"Please enter your PinCode"]
+                // required:[true,"Please enter your PinCode"]
             },
             nationality:{
                 type:String,
-                required:[true,"Please enter your Country Name"]
+                // required:[true,"Please enter your Country Name"]
             }
         }
     ],
 })
 
-module.exports=mongoos.model("sellerAddmin",sellerAddminSchema);
+const SellerAdmin=mongoose.model("sellerAddmin",sellerAddminSchema);
+
+export default SellerAdmin
