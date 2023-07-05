@@ -2,6 +2,7 @@ import express from "express";
 import asyncHandler from "express-async-handler"
 import SellerAdmin from "../models/sellerAddmin.js"
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
 
 export const SellerUserRegistration = asyncHandler(async (request, response) => {
@@ -48,9 +49,10 @@ export const SellerUserRegistration = asyncHandler(async (request, response) => 
 
 
 export const SellerUserlogin = asyncHandler(async (request, response) => {
+    console.log("trrr");
     try {
-        email = request.body.email
-        password = request.body.password
+        const email = request.body.email
+        const password = request.body.password
 
         if (!email || !password) {
             return response.status(400).json({ data: "some field is missing" })
@@ -66,9 +68,12 @@ export const SellerUserlogin = asyncHandler(async (request, response) => {
                 if (!passwordMatch) {
                   return response.status(401).json({ message: "Invalid password" });
                 }
-              
+
+                console.log(user,"user");
+            //   const newuser= 
                 // Passwords match, generate a JWT token
-                const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
+                // const token = jwt.sign({ user }, process.env.SECERT_KEY, { expiresIn: '1h' });
+                const token = jwt.sign({ user }, process.env.SECERT_KEY);
   
                 // Return the token in the response
                 return response.json({ message: "Login successful", token });
