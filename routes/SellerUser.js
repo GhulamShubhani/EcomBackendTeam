@@ -5,3 +5,6 @@ export const sellerRouter = express.Router()
 
 sellerRouter.post("/createuser",SellerUserRegistration)
 sellerRouter.post("/login",SellerUserlogin)
+sellerRouter.get("/test",(req,res)=>{
+    res.json({data:"data send "})
+})

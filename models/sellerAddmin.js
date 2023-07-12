@@ -1,70 +1,96 @@
 import mongoose from 'mongoose';
-const sellerAddminSchema=mongoose.Schema({
-    fullName:{
-        type:String,
-        required:[true,"Please enter your name"]
-    },
-    email:{
-        type:String,
-        required:[true,"Please enter your email"]
-    },
-    password:{
-        type:String,
-        required:[true,"Please enter your Password"],
-        minLength:[4,"please enter atleast 8 char"]
-    },
-    mobileNumber:{
-        type:Number,
-        required:[true,"Please enter your mobile number"],
-        maxLength:[14,"mobile number not less than 10"]
-    },
-    adharNumber:{
-        type:Number,
-        // required:[true,"Please enter your Adhar number"],
-        // maxLength:[4,"Adhar number cannot exceed 12 Number"]
-    },
-    panNumber:{
-        type:Number,
-        // required:[true,"Please enter your Pan number"]
-    },
-    accountNumber:[
-        {
-            accountnum:{
-                type:Number,
-                // required:[true,"Please enter your Account number"]
-            },
-            ifcCode:{
-                type:Number,
-                // required:[true,"Please enter your IFC-CODE number"]
-            },  
-        }
-    ],
-    address:[
-        {
-            village:{
-                type:String,
-                // required:[true,"Please enter your Village"]
-            },
-            District:{
-                type:String,
-                // required:[true,"Please enter your District"]
-            },
-            state:{
-                type:String,
-                // required:[true,"Please enter your State Name"]
-            },
-            PinCode:{
-                type:Number,
-                // required:[true,"Please enter your PinCode"]
-            },
-            nationality:{
-                type:String,
-                // required:[true,"Please enter your Country Name"]
-            }
-        }
-    ],
-})
 
-const SellerAdmin=mongoose.model("sellerAddmin",sellerAddminSchema);
+const sellerAddminSchema = mongoose.Schema({
+  fullName: {
+    type: String,
+    required: [true, "Please enter your name"]
+  },
+  email: {
+    type: String,
+    required: [true, "Please enter your email"]
+  },
+  password: {
+    type: String,
+    required: [true, "Please enter your Password"],
+    minLength: [4, "Please enter at least 4 characters"]
+  },
+  mobileNumber: {
+    type: Number,
+    required: [true, "Please enter your mobile number"],
+    minLength: [9, "Mobile number should not be less than 9 characters"]
+  },
+  gender: {
+    type: String,
+    enum: ["male", "female", "other"],
+    required: true
+  },
+  country: {
+    type: String
+  },
+  adharNumber: {
+    type: Number,
+    default: null
+  },
+  profilepic: {
+    type: String
+  },
+  panNumber: {
+    type: Number
+    // required: [true, "Please enter your Pan number"]
+  },
+  device: {
+    fcmToken: {
+      type: String,
+      required: true
+    },
+    deviceName: {
+      type: String,
+      required: true
+    },
+    deviceCountryCode: {
+      type: String,
+      required: true
+    },
+    deviceLanguageCode: {
+      type: String,
+      required: true
+    },
+    deviceIdentifier: {
+      type: String,
+      required: true
+    }
+  },
+  accountNumber: [
+    {
+      accountnum: {
+        type: Number
+      },
+      ifcCode: {
+        type: Number
+      }
+    }
+  ],
+  address: [
+    {
+      village: {
+        type: String
+      },
+      District: {
+        type: String
+      },
+      state: {
+        type: String
+      },
+      PinCode: {
+        type: Number
+      },
+      nationality: {
+        type: String
+      }
+    }
+  ]
+});
 
-export default SellerAdmin
+const SellerAdmin = mongoose.model("sellerAddmin", sellerAddminSchema);
+
+export default SellerAdmin;
