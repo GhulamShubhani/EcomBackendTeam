@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler"
 import SellerAdmin from "../models/sellerAddmin.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import nodemailer from "nodemailer"
 
 
 export const SellerUserRegistration = asyncHandler(async (request, response) => {
@@ -63,7 +64,6 @@ export const SellerUserRegistration = asyncHandler(async (request, response) => 
 
 
 export const SellerUserlogin = asyncHandler(async (request, response) => {
-    console.log("trrr");
     try {
         const email = request.body.email;
         const password = request.body.password;
@@ -73,31 +73,19 @@ export const SellerUserlogin = asyncHandler(async (request, response) => {
             return response.status(400).json({ data: "Some fields are missing" });
         } else {
             try {
-                console.log("aa");
-                // const user = await SellerAdmin.findOne({ email }).select("-password -amount");
                 const user = await SellerAdmin.findOne({ email });
-                // console.log("user",user);
                 if (!user) {
                     return response.status(404).json({ message: "User not found" });
                 }
-
                 const passwordMatch = await bcrypt.compare(password, user.password);
                 if (!passwordMatch) {
                     return response.status(401).json({ message: "Invalid password" });
                 }
-
-                console.log(user, "user");
-
-                // Update the device data for the logged-in user
                 user.device = device;
-                await user.save();
-
-                console.log( "1user");
+                await user.save()
 
                 // Generate a JWT token
                 const token = jwt.sign({ user }, process.env.SECERT_KEY);
-
-                console.log( "2user");
 
                 // Return the user details (except password and amount) and the token in the response
                 const userDetails = { ...user.toObject(), password: undefined, amount: undefined };
@@ -116,17 +104,17 @@ export const UserExist = asyncHandler(async (request, response) => {
     try {
         // const email2 = request.query.email;
         const email2 = request.body.email;
-        console.log("email1",email2);
+        console.log("email1", email2);
         if (!email2) {
             return response.status(400).json({ message: "Email field is missing" });
         } else {
             // const user = await SellerAdmin.findOne({ email });
-            const user = await SellerAdmin.findOne({ email:email2 });
-            console.log(user,"user1");
+            const user = await SellerAdmin.findOne({ email: email2 });
+            console.log(user, "user1");
             if (!user) {
                 return response.status(404).json({ message: "User not found" });
             } else {
-                return response.status(404).json({ message: "User found",data:true });;
+                return response.status(404).json({ message: "User found", data: true });;
             }
         }
     } catch (err) {
@@ -175,3 +163,177 @@ export const SellerUserToken = asyncHandler(async (request, response) => {
         console.log(err);
     }
 })
+
+
+export const sendEmailOTP = asyncHandler(async (request, response) => {
+    console.log("trrrhhhh");
+    try {
+        const { email } = request.body;
+        if (!email) {
+            return response.status(400).json({ data: "some field is missing" })
+            // throw new Error("backend problem ")
+        } else {
+            try {
+                const user = await SellerAdmin.findOne({ email });
+                if (!user) {
+                    return response.status(404).json({ message: "User not found" });
+                }
+
+                // Generate OTP dynamically (You can use your own OTP generation logic)
+                const otp = generateOTP();
+
+                // Create a transporter object with email service provider's SMTP configuration
+                const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: 'ghulam.shubhani00000@gmail.com',
+                        pass: 'gaivfmawkuwqmiid',
+                    },
+                });
+                // Define email content and options
+                const mailOptions = {
+                    from: 'ghulam.shubhani00000@gmail.com',
+                    to: email,
+                    subject: 'OTP Verification',
+                    text: `Your OTP is: ${otp}`,
+                };
+                // Send the email
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.log('Error sending email:', error);
+                        response.status(500).json({ error: 'Failed to send OTP via email' });
+                    } else {
+                        console.log('Email sent:', info.response);
+                        response.json({ message: 'OTP sent via email' });
+                    }
+                });
+            } catch (err) {
+                console.log("Error in login: ", err);
+                throw new Error("Backend problem");
+            }
+        }
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+// Helper function to generate OTP
+function generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000);
+}
+
+export const forgetPassword = asyncHandler(async (request, response) => {
+    console.log("trrrhhhh");
+    try {
+        const { email,otp } = request.body;
+        if (!email || !otp) {
+            return response.status(400).json({ data: "some field is missing" })
+            // throw new Error("backend problem ")
+        } else {
+            try {
+                const user = await SellerAdmin.findOne({ email });
+                if (!user) {
+                    return response.status(404).json({ message: "User not found" });
+                }
+
+                // Generate OTP dynamically (You can use your own OTP generation logic)
+                const otp = generateOTP();
+
+                // Create a transporter object with email service provider's SMTP configuration
+                const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: process.env.EMAIL,
+                        pass: process.env.PASSWORD,
+                    },
+                });
+                // Define email content and options
+                const mailOptions = {
+                    from: process.env.EMAIL,
+                    to: email,
+                    subject: 'OTP Verification',
+                    text: `Your OTP is: ${otp}`,
+                };
+                // Send the email
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.log('Error sending email:', error);
+                        response.status(500).json({ error: 'Failed to send OTP via email' });
+                    } else {
+                        console.log('Email sent:', info.response);
+                        response.json({ message: 'OTP sent via email' });
+                    }
+                });
+            } catch (err) {
+                console.log("Error in login: ", err);
+                throw new Error("Backend problem");
+            }
+        }
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+export const ChangePassword = asyncHandler(async (request, response) => {
+    console.log("trrr");
+    try {
+        const {email,password,newpassword} = request.body
+        
+
+        if (!email || !password || !newpassword) {
+            return response.status(400).json({ data: "some field is missing" })
+            // throw new Error("backend problem ")
+        } else {
+            try {
+                const user = await SellerAdmin.findOne({ email });
+                if (!user) {
+                    return response.status(404).json({ message: "User not found" });
+                }
+
+                const passwordMatch = await bcrypt.compare(password, user.password);
+                if (!passwordMatch) {
+                    return response.status(401).json({ message: "Invalid password" });
+                }
+
+                console.log(user, "user");
+                const salt = await bcrypt.genSalt(10)
+                const hashpassword = await bcrypt.hash(newpassword,salt)
+                
+                user.password = hashpassword
+                await user.save();
+
+                // Return the token in the response
+                return response.json({ message: "Login successful", token });
+            } catch (err) {
+                console.log("Error in login: ", err);
+                throw new Error("Backend problem");
+            }
+        }
+    } catch (err) {
+        console.log(err);
+    }
+})
+
+export const deleteProfilePic = asyncHandler(async (request,response)=>{
+    try{
+        const {email} = request.body 
+        if(!email){
+            return response.status(400).json({ data: "some field is missing" })
+        }else{
+            const user = await SellerAdmin.findOne({email})
+            if(!user){
+                return response.status(404).json({ message: "User not found" });
+            }
+            user.profilepic = null
+            await user.save();
+        }
+
+    }catch(err){ 
+        console.log(err);
+    }
+})
+
+
+
+
+
