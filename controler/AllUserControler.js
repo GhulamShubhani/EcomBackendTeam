@@ -1,15 +1,16 @@
 import express, { response } from "express";
 import asyncHandler from "express-async-handler"
-import SellerAdmin from "../models/sellerAddmin.js"
+import AllUser from "../models/AllUser.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import nodemailer from "nodemailer"
 
 
-export const SellerUserRegistration = asyncHandler(async (request, response) => {
+export const AllUserRegistration = asyncHandler(async (request, response) => {
 
     try {
         const {
+            type,
             fullName,
             email,
             password,
@@ -21,14 +22,14 @@ export const SellerUserRegistration = asyncHandler(async (request, response) => 
         } = request.body;
 
 
-        if (!fullName || !email || !password || !mobileNumber || !gender || !device) {
+        if (!type || !fullName || !email || !password || !mobileNumber || !gender || !device) {
             return response.status(400).json({ data: "some field is missing" })
             // throw new Error("backend problem ")
         } else {
 
 
             try {
-                const checkemail = await SellerAdmin.find({ email })
+                const checkemail = await AllUser.find({ email })
                 if (checkemail.length !== 0) {
                     return response.status(400).json({ message: "email already exist" })
                 }
@@ -38,7 +39,8 @@ export const SellerUserRegistration = asyncHandler(async (request, response) => 
                 // Hash the password with the generated salt
                 const hash = await bcrypt.hash(password, salt);
                 // Create a new seller admin instance
-                const newSellerAdmin = new SellerAdmin({
+                const newAllUser = new AllUser({
+                    type,
                     fullName,
                     email,
                     password: hash,
@@ -48,7 +50,7 @@ export const SellerUserRegistration = asyncHandler(async (request, response) => 
                     profilepic,
                     device
                 });
-                const User = await SellerAdmin.create(newSellerAdmin)
+                const User = await AllUser.create(newAllUser)
                 return response.json({ message: "successfull", data: User })
             } catch (err) {
                 console.log("error in regidtration ", err);
@@ -63,7 +65,7 @@ export const SellerUserRegistration = asyncHandler(async (request, response) => 
 
 
 
-export const SellerUserlogin = asyncHandler(async (request, response) => {
+export const AllUserlogin = asyncHandler(async (request, response) => {
     try {
         const email = request.body.email;
         const password = request.body.password;
@@ -73,7 +75,7 @@ export const SellerUserlogin = asyncHandler(async (request, response) => {
             return response.status(400).json({ data: "Some fields are missing" });
         } else {
             try {
-                const user = await SellerAdmin.findOne({ email });
+                const user = await AllUser.findOne({ email });
                 if (!user) {
                     return response.status(404).json({ message: "User not found" });
                 }
@@ -109,7 +111,7 @@ export const UserExist = asyncHandler(async (request, response) => {
             return response.status(400).json({ message: "Email field is missing" });
         } else {
             // const user = await SellerAdmin.findOne({ email });
-            const user = await SellerAdmin.findOne({ email: email2 });
+            const user = await AllUser.findOne({ email: email2 });
             console.log(user, "user1");
             if (!user) {
                 return response.status(404).json({ message: "User not found" });
@@ -123,7 +125,7 @@ export const UserExist = asyncHandler(async (request, response) => {
     }
 });
 
-export const SellerUserToken = asyncHandler(async (request, response) => {
+export const AllUserToken = asyncHandler(async (request, response) => {
     console.log("trrr");
     try {
         const email = request.body.email
@@ -134,7 +136,7 @@ export const SellerUserToken = asyncHandler(async (request, response) => {
             // throw new Error("backend problem ")
         } else {
             try {
-                const user = await SellerAdmin.findOne({ email });
+                const user = await AllUser.findOne({ email });
                 if (!user) {
                     return response.status(404).json({ message: "User not found" });
                 }
@@ -174,7 +176,7 @@ export const sendEmailOTP = asyncHandler(async (request, response) => {
             // throw new Error("backend problem ")
         } else {
             try {
-                const user = await SellerAdmin.findOne({ email });
+                const user = await AllUser.findOne({ email });
                 if (!user) {
                     return response.status(404).json({ message: "User not found" });
                 }
@@ -231,7 +233,7 @@ export const forgetPassword = asyncHandler(async (request, response) => {
             // throw new Error("backend problem ")
         } else {
             try {
-                const user = await SellerAdmin.findOne({ email });
+                const user = await AllUser.findOne({ email });
                 if (!user) {
                     return response.status(404).json({ message: "User not found" });
                 }
@@ -285,7 +287,7 @@ export const ChangePassword = asyncHandler(async (request, response) => {
             // throw new Error("backend problem ")
         } else {
             try {
-                const user = await SellerAdmin.findOne({ email });
+                const user = await AllUser.findOne({ email });
                 if (!user) {
                     return response.status(404).json({ message: "User not found" });
                 }
@@ -320,7 +322,7 @@ export const deleteProfilePic = asyncHandler(async (request,response)=>{
         if(!email){
             return response.status(400).json({ data: "some field is missing" })
         }else{
-            const user = await SellerAdmin.findOne({email})
+            const user = await AllUser.findOne({email})
             if(!user){
                 return response.status(404).json({ message: "User not found" });
             }

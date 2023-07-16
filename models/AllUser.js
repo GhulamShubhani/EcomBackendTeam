@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 
-const sellerAddminSchema = mongoose.Schema({
+const AllUserSchema = mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["seller", "user"],
+    required: true
+  },
   fullName: {
     type: String,
     required: [true, "Please enter your name"]
@@ -91,6 +96,6 @@ const sellerAddminSchema = mongoose.Schema({
   ]
 });
 
-const SellerAdmin = mongoose.model("sellerAddmin", sellerAddminSchema);
+const AllUser = mongoose.model("AllUser", AllUserSchema);
 
-export default SellerAdmin;
+export default AllUser;
