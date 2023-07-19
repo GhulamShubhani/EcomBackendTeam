@@ -6,7 +6,11 @@ const AllUserSchema = mongoose.Schema({
     enum: ["seller", "user"],
     required: true
   },
-  fullName: {
+  firstName: {
+    type: String,
+    required: [true, "Please enter your name"]
+  },
+  lastName: {
     type: String,
     required: [true, "Please enter your name"]
   },
@@ -30,13 +34,14 @@ const AllUserSchema = mongoose.Schema({
     required: true
   },
   country: {
-    type: String
+    type: String,
+    default: null
   },
   adharNumber: {
     type: Number,
     default: null
   },
-  profilepic: {
+  profilePicture: {
     type: String
   },
   panNumber: {
