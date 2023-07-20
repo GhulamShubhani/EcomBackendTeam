@@ -11,7 +11,8 @@ export const AllUserRegistration = asyncHandler(async (request, response) => {
     try {
         const {
             type,
-            fullName,
+            firstName,
+            lastName,
             email,
             password,
             mobileNumber,
@@ -22,7 +23,7 @@ export const AllUserRegistration = asyncHandler(async (request, response) => {
         } = request.body;
 
 
-        if (!type || !fullName || !email || !password || !mobileNumber || !gender || !device) {
+        if (!type || !firstName || !lastName || !email || !password || !mobileNumber || !gender || !device) {
             return response.status(400).json({ data: "some field is missing" })
             // throw new Error("backend problem ")
         } else {
@@ -41,7 +42,8 @@ export const AllUserRegistration = asyncHandler(async (request, response) => {
                 // Create a new seller admin instance
                 const newAllUser = new AllUser({
                     type,
-                    fullName,
+                    firstName,
+                    lastName,
                     email,
                     password: hash,
                     mobileNumber,
