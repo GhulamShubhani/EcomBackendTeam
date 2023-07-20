@@ -4,9 +4,10 @@ import jwt from "jsonwebtoken"
 export const  tokenValidation = asyncHandler(async (request, response ,next)=>{
     let token
     let authHeader = request.headers.authorization || request.headers.Authorization
-
+    // console.log("authtoken1",authHeader,token);
     if (authHeader && authHeader.startsWith("Bearer")){
         token = authHeader.split(" ")[1]
+        // console.log("authtoken2",token);
         jwt.verify(token,process.env.SECERT_KEY,(err,decode)=>{
             if (err) {
                 response.status(401);

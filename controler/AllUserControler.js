@@ -170,7 +170,7 @@ export const AllUserToken = asyncHandler(async (request, response) => {
 
 
 export const sendEmailOTP = asyncHandler(async (request, response) => {
-    console.log("trrrhhhh");
+    // console.log("sendotp");
     try {
         const { email } = request.body;
         if (!email) {
@@ -185,15 +185,16 @@ export const sendEmailOTP = asyncHandler(async (request, response) => {
 
                 // Generate OTP dynamically (You can use your own OTP generation logic)
                 const otp = generateOTP();
-
+                // console.log(otp,"opt");
                 // Create a transporter object with email service provider's SMTP configuration
                 const transporter = nodemailer.createTransport({
                     service: 'gmail',
                     auth: {
                         user: 'ghulam.shubhani00000@gmail.com',
-                        pass: 'gaivfmawkuwqmiid',
+                        pass: 'mjoyovhgbrrgzvzo',
                     },
                 });
+                // console.log("transporter",transporter);
                 // Define email content and options
                 const mailOptions = {
                     from: 'ghulam.shubhani00000@gmail.com',
@@ -201,6 +202,7 @@ export const sendEmailOTP = asyncHandler(async (request, response) => {
                     subject: 'OTP Verification',
                     text: `Your OTP is: ${otp}`,
                 };
+                // console.log(mailOptions,"mailoption");
                 // Send the email
                 transporter.sendMail(mailOptions, (error, info) => {
                     if (error) {
@@ -293,8 +295,10 @@ export const ChangePassword = asyncHandler(async (request, response) => {
                 if (!user) {
                     return response.status(404).json({ message: "User not found" });
                 }
+                console.log(email,password,newpassword,"0000000",user,request.user);
 
                 const passwordMatch = await bcrypt.compare(password, user.password);
+                console.log("passwordMatch",passwordMatch);
                 if (!passwordMatch) {
                     return response.status(401).json({ message: "Invalid password" });
                 }
@@ -307,7 +311,7 @@ export const ChangePassword = asyncHandler(async (request, response) => {
                 await user.save();
 
                 // Return the token in the response
-                return response.json({ message: "Login successful", token });
+                return response.json({ message: "User password successfully" });
             } catch (err) {
                 console.log("Error in login: ", err);
                 throw new Error("Backend problem");
@@ -336,6 +340,28 @@ export const deleteProfilePic = asyncHandler(async (request,response)=>{
         console.log(err);
     }
 })
+
+export const deleteUser = asyncHandler(async (request,response)=>{
+    try {
+        const userId = request.params.userId;
+
+        // Check if the user with the provided userId exists in the database
+        const user = await AllUser.findById(userId);
+        if (!user) {
+            return response.status(404).json({ message: 'User not found' });
+        }
+
+        // Perform any additional checks if needed (e.g., user authentication)
+
+        // If all checks pass, proceed with deleting the user
+        await AllUser.findByIdAndDelete(userId);
+
+        return response.json({ message: 'User deleted successfully' });
+    } catch (err) {
+        console.log("Error in deleting user: ", err);
+        return response.status(500).json({ message: 'Backend problem' });
+    }
+});
 
 
 

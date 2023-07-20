@@ -1,6 +1,7 @@
 import express from "express";
+import { tokenValidation } from "../middlewere/TokenValidation.js";
 import {AllUserRegistration,AllUserlogin,AllUserToken,UserExist,forgetPassword,
-    deleteProfilePic,ChangePassword,sendEmailOTP} from "../controler/AllUserControler.js"
+    deleteProfilePic,ChangePassword,sendEmailOTP,deleteUser} from "../controler/AllUserControler.js"
 
 export const AllUser = express.Router()
 
@@ -12,9 +13,17 @@ AllUser.post("/userexist",UserExist)
 
 
 AllUser.post("/forgetpassword",forgetPassword)
-AllUser.post("/changepassword",ChangePassword)
 AllUser.post("/sendotp",sendEmailOTP)
-AllUser.post("/deleteprofilepic",deleteProfilePic)
+
+
+AllUser.post("/changepassword",tokenValidation,ChangePassword)
+AllUser.post("/deleteprofilepic",tokenValidation ,deleteProfilePic)
+AllUser.delete("/deleteuser/:userId", tokenValidation, deleteUser);
+
+AllUser.delete("/deleteuser1", tokenValidation, (req,res)=>{
+    res.json({data:"delete send "})
+});
+
 
 
 AllUser.get("/test",(req,res)=>{
