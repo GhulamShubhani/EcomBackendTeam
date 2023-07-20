@@ -1,6 +1,7 @@
 import express, { response } from "express";
 import asyncHandler from "express-async-handler"
 import AllUser from "../models/AllUser.js"
+import EmailOtp from "../models/EmailOTP.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import nodemailer from "nodemailer"
@@ -202,6 +203,13 @@ export const sendEmailOTP = asyncHandler(async (request, response) => {
                     subject: 'OTP Verification',
                     text: `Your OTP is: ${otp}`,
                 };
+                const emailOtpInstance = new EmailOtp({
+                    // user_id: user._id, // Assuming you have the 'user' object from previous operations
+                    // perpous: 'signup', // Set the appropriate purpose here (e.g., 'signup' or 'forgetpassword')
+                    otp: otp,
+                });
+        
+                await emailOtpInstance.save();
                 // console.log(mailOptions,"mailoption");
                 // Send the email
                 transporter.sendMail(mailOptions, (error, info) => {
@@ -210,7 +218,14 @@ export const sendEmailOTP = asyncHandler(async (request, response) => {
                         response.status(500).json({ error: 'Failed to send OTP via email' });
                     } else {
                         console.log('Email sent:', info.response);
-                        response.json({ message: 'OTP sent via email' });
+                        return response.json({
+                            message: 'OTP sent via email',
+                            data: {
+                                _id: emailOtpInstance._id,
+                                createdAt: emailOtpInstance.createdAt, // Include createdAt field in the response
+                                updatedAt: emailOtpInstance.updatedAt, // Include updatedAt field in the response
+                            },
+                        });
                     }
                 });
             } catch (err) {

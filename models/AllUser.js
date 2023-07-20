@@ -16,7 +16,8 @@ const AllUserSchema = mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, "Please enter your email"]
+    required: [true, "Please enter your email"],
+    unique: [true, "Email address already taken"],
   },
   password: {
     type: String,
@@ -99,7 +100,11 @@ const AllUserSchema = mongoose.Schema({
       }
     }
   ]
-});
+},
+{
+  timestamps: true,
+}
+);
 
 const AllUser = mongoose.model("AllUser", AllUserSchema);
 
