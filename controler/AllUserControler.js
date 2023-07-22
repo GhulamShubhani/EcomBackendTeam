@@ -349,6 +349,46 @@ export const deleteProfilePic = asyncHandler(async (request,response)=>{
             }
             user.profilepic = null
             await user.save();
+            return response.json({message:"Image Delete Successfully" , Data:[], status:200})
+        }
+
+    }catch(err){ 
+        console.log(err);
+    }
+})
+
+export const updateProfilePic = asyncHandler(async (request,response)=>{
+    try{
+        const {email,backgroundProfilePicture} = request.body 
+        if(!email || !backgroundProfilePicture){
+            return response.status(400).json({ data: "some field is missing" })
+        }else{
+            const user = await AllUser.findOne({email})
+            if(!user){
+                return response.status(404).json({ message: "User not found" });
+            }
+            user.backgroundProfilePicture = backgroundProfilePicture
+            await user.save();
+        }
+
+    }catch(err){ 
+        console.log(err);
+    }
+})
+
+export const deleteBackGroundProfilePic = asyncHandler(async (request,response)=>{
+    try{
+        const {email} = request.body 
+        if(!email){
+            return response.status(400).json({ data: "some field is missing" })
+        }else{
+            const user = await AllUser.findOne({email})
+            if(!user){
+                return response.status(404).json({ message: "User not found" });
+            }
+            user.backgroundProfilePicture = null
+            await user.save();
+            return response.json({message:"Back Ground Image Delete Successfully" , Data:[], status:200})
         }
 
     }catch(err){ 
@@ -366,9 +406,6 @@ export const deleteUser = asyncHandler(async (request,response)=>{
             return response.status(404).json({ message: 'User not found' });
         }
 
-        // Perform any additional checks if needed (e.g., user authentication)
-
-        // If all checks pass, proceed with deleting the user
         await AllUser.findByIdAndDelete(userId);
 
         return response.json({ message: 'User deleted successfully' });
