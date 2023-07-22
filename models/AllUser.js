@@ -43,7 +43,12 @@ const AllUserSchema = mongoose.Schema({
     default: null
   },
   profilePicture: {
-    type: String
+    type: String,
+    default:null
+  },
+  backgroundProfilePicture: {
+    type: String,
+    default:null
   },
   panNumber: {
     type: Number

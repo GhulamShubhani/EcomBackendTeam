@@ -173,8 +173,8 @@ export const AllUserToken = asyncHandler(async (request, response) => {
 export const sendEmailOTP = asyncHandler(async (request, response) => {
     // console.log("sendotp");
     try {
-        const { email } = request.body;
-        if (!email) {
+        const { email,perpous } = request.body;
+        if (!email || !perpous) {
             return response.status(400).json({ data: "some field is missing" })
             // throw new Error("backend problem ")
         } else {
@@ -205,7 +205,7 @@ export const sendEmailOTP = asyncHandler(async (request, response) => {
                 };
                 const emailOtpInstance = new EmailOtp({
                     // user_id: user._id, // Assuming you have the 'user' object from previous operations
-                    // perpous: 'signup', // Set the appropriate purpose here (e.g., 'signup' or 'forgetpassword')
+                    perpous, // Set the appropriate purpose here (e.g., 'signup' or 'forgetpassword')
                     otp: otp,
                 });
         
@@ -377,6 +377,27 @@ export const deleteUser = asyncHandler(async (request,response)=>{
         return response.status(500).json({ message: 'Backend problem' });
     }
 });
+
+export const getUserDeta = asyncHandler(async(request,response)=>{
+    try{
+        const {email} = request.body
+        if(!email){
+            return response.json({message:"email field is missing",status:400})
+        }
+        const userData = await AllUser.findOne({email})
+        if(!userData){
+            return response.json({message:"wrong email",status:400,data:[]})
+        }
+        console.log("user",userData);
+        // Return the user details (except password and amount) and the token in the response
+        const userDetails = { ...userData.toObject(), password: undefined }
+        return response.json({ message: "Data get successful", data: userDetails, status:200 })
+    }catch(err){
+        console.log(err);
+        return response.status(500).json({ message: 'Backend problem' });
+    }
+
+})
 
 
 
