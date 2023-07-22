@@ -357,18 +357,22 @@ export const deleteProfilePic = asyncHandler(async (request,response)=>{
     }
 })
 
-export const updateProfilePic = asyncHandler(async (request,response)=>{
+export const updateBackGroundProfilePic = asyncHandler(async (request,response)=>{
+    console.log("up");
     try{
         const {email,backgroundProfilePicture} = request.body 
+        console.log("up",email,backgroundProfilePicture);
         if(!email || !backgroundProfilePicture){
             return response.status(400).json({ data: "some field is missing" })
         }else{
             const user = await AllUser.findOne({email})
+            console.log("upuser",user);
             if(!user){
                 return response.status(404).json({ message: "User not found" });
             }
             user.backgroundProfilePicture = backgroundProfilePicture
             await user.save();
+            return response.json({message:"Back Ground Image Upload Successfully" , Data:[], status:200})
         }
 
     }catch(err){ 
@@ -426,9 +430,10 @@ export const getUserDeta = asyncHandler(async(request,response)=>{
             return response.json({message:"wrong email",status:400,data:[]})
         }
         console.log("user",userData);
-        // Return the user details (except password and amount) and the token in the response
-        const userDetails = { ...userData.toObject(), password: undefined }
-        return response.json({ message: "Data get successful", data: userDetails, status:200 })
+
+       // Return the user details (except password and amount) and the token in the response
+       const userDetails = { ...userData.toObject(), password: undefined, amount: undefined };
+       return response.json({ message: " successful", user: userData });
     }catch(err){
         console.log(err);
         return response.status(500).json({ message: 'Backend problem' });
