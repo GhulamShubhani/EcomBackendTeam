@@ -12,6 +12,14 @@ connectDB();
 
 const app = express();
 
+const corsOptions = {
+  origin: "http://localhost:3002",
+  // Add other CORS options if needed
+};
+
+app.use(cors(corsOptions));
+
+// Enable CORS for all routes
 app.use(cors());
 
 app.use(express.json());
