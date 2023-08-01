@@ -91,7 +91,7 @@ export const AllUserRegistration = asyncHandler(async (request, response) => {
             }
         }
     } catch (err) {
-        console.log(err);
+        throw new Error("backend problem ",err)
     }
 })
 
