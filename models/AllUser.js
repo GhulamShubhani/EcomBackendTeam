@@ -59,20 +59,14 @@ const AllUserSchema = mongoose.Schema({
       type: String,
       required: true
     },
-    deviceName: {
-      type: String,
+   
+    deviceCountryData: {
+      type: Array,
       required: true
     },
-    deviceCountryCode: {
-      type: String,
-      required: true
-    },
-    deviceLanguageCode: {
-      type: String,
-      required: true
-    },
+  
     deviceIdentifier: {
-      type: String,
+      type: Array,
       required: true
     }
   },

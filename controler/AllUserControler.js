@@ -124,7 +124,7 @@ export const AllUserlogin = asyncHandler(async (request, response) => {
 
                 // Return the user details (except password and amount) and the token in the response
                 const userDetails = { ...user.toObject(), password: undefined, amount: undefined };
-                return response.json({ message: "Login successful", user: userDetails, token });
+                return response.json({ message: "Login successful", user: userDetails, accessToken:token });
             } catch (err) {
                 console.log("Error in login: ", err);
                 throw new Error("Backend problem");
@@ -274,10 +274,15 @@ function generateOTP() {
 }
 
 export const forgetPassword = asyncHandler(async (request, response) => {
-    console.log("trrrhhhh");
+    console.log("trrrhhhh",request.body);
     try {
-        const { email, otp } = request.body;
-        if (!email || !otp) {
+        const {
+            email,
+            emailCode,
+            OtpId,
+            password 
+        } = request.body;
+        if (!email || !emailCode || !OtpId || !password ) {
             return response.status(400).json({ data: "some field is missing" })
             // throw new Error("backend problem ")
         } else {
@@ -287,34 +292,43 @@ export const forgetPassword = asyncHandler(async (request, response) => {
                     return response.status(404).json({ message: "User not found" });
                 }
 
-                // Generate OTP dynamically (You can use your own OTP generation logic)
-                const otp = generateOTP();
+                const checkOTP = await EmailOtp.findById(OtpId)
+                console.log(checkOTP.otp, "checkOTP");
+                console.log(emailCode, "emailCode");
+                if (checkOTP.otp == emailCode) {
+                    const createdAtDate = new Date(checkOTP.createdAt);
+                    const currentTime = new Date();
 
-                // Create a transporter object with email service provider's SMTP configuration
-                const transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    auth: {
-                        user: process.env.EMAIL,
-                        pass: process.env.PASSWORD,
-                    },
-                });
-                // Define email content and options
-                const mailOptions = {
-                    from: process.env.EMAIL,
-                    to: email,
-                    subject: 'OTP Verification',
-                    text: `Your OTP is: ${otp}`,
-                };
-                // Send the email
-                transporter.sendMail(mailOptions, (error, info) => {
-                    if (error) {
-                        console.log('Error sending email:', error);
-                        response.status(500).json({ error: 'Failed to send OTP via email' });
+                    // Calculate the difference between the current time and the createdAt time in milliseconds
+                    const timeDifference = currentTime - createdAtDate;
+
+                    // Convert the time difference to minutes
+                    const timeDifferenceInMinutes = timeDifference / (1000 * 60);
+
+                    // Check if the createdAt time is less than 10 minutes from the current time
+                    if (timeDifferenceInMinutes < 10) {
+                        console.log("createdAt time is less than 10 minutes from the current time.");
                     } else {
-                        console.log('Email sent:', info.response);
-                        response.json({ message: 'OTP sent via email' });
+                        return response.status(400).json({ message: "otp time out " })
+                        console.log("createdAt time is greater than or equal to 10 minutes from the current time.");
                     }
-                });
+
+                } else {
+                    return response.status(400).json({ message: "otp not match" })
+                }
+                
+                // Generate a salt
+                // process.env.SALTROUNDS
+                const salt = await bcrypt.genSalt(10);
+                // Hash the password with the generated salt
+                const hashpassword = await bcrypt.hash(password, salt);
+
+                user.password = hashpassword
+                await user.save();
+
+                // Return the token in the response
+                return response.json({ message: "User password successfully" });
+               
             } catch (err) {
                 console.log("Error in login: ", err);
                 throw new Error("Backend problem");
